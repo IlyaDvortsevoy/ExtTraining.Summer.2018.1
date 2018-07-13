@@ -137,12 +137,18 @@ namespace MazeLibrary.Tests
 
                 if (!MatrixAreEquals(solver.MazeWithPass(), result[i]))
                 {
-                    //TODO
+                    Assert.Fail();
+                }
+                else
+                {
+                    Assert.Pass();
                 }
             }
         }
 
-        private static bool MatrixAreEquals(int[,] lhs, int[,] rhs) => throw new NotImplementedException();
-
+        private static bool MatrixAreEquals(int[,] lhs, int[,] rhs)
+        {
+            return lhs.Equals(rhs);
+        }
     }
 }
