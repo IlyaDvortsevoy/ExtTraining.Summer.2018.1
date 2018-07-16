@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using NUnit.Framework;
 
 namespace MazeLibrary.Tests
@@ -127,28 +128,27 @@ namespace MazeLibrary.Tests
             => Assert.Throws<ArgumentException>(() => new MazeSolver(sourceData[1], 0, -2));
 
         [Test]
-        public void PassMaze_SuccessfulTests()
+        public void PassMaze_SuccessfulTests_Case1()
         {
-            for (int i = 0; i < sourceData.Length; i++)
-            {
-                MazeSolver solver = new MazeSolver(sourceData[i], startXs[i], startYs[i]);
+           
+            MazeSolver solver = new MazeSolver(sourceData[0], startXs[0], startYs[0]);
 
-                solver.PassMaze();
+            solver.PassMaze();
+            int[,] output = solver.MazeWithPass();
 
-                if (!MatrixAreEquals(solver.MazeWithPass(), result[i]))
-                {
-                    Assert.Fail();
-                }
-                else
-                {
-                    Assert.Pass();
-                }
-            }
+            CollectionAssert.AreEquivalent(output, result[0]);
         }
 
-        private static bool MatrixAreEquals(int[,] lhs, int[,] rhs)
+        [Test]
+        public void PassMaze_SuccessfulTests_Case2()
         {
-            return lhs.Equals(rhs);
+
+            MazeSolver solver = new MazeSolver(sourceData[1], startXs[1], startYs[1]);
+
+            solver.PassMaze();
+            int[,] output = solver.MazeWithPass();
+
+            CollectionAssert.AreEquivalent(output, result[1]);
         }
     }
 }
