@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MazeLibrary
 {
@@ -7,6 +8,8 @@ namespace MazeLibrary
         private int[,] mazeArray;
         private int startX;
         private int startY;
+        private int count = 1;
+        private List<(int x, int y)> visited = new List<(int x, int y)>();
 
         public MazeSolver(int[,] mazeModel, int startX, int startY)
         {
@@ -22,44 +25,124 @@ namespace MazeLibrary
 
         public void PassMaze()
         {
-            int xPos = startX;
-            int yPos = startY;
-            int count = 1;
+            PassMaze(startX, startY);
+        }
 
-            while (true)
+        #region Private Methods
+        private void PassMaze(int startX, int startY)
+        {
+            mazeArray[startX, startY] = count++;
+            visited.Add((startX, startY));
+
+            if (CanGoLeft(startX, startY)
+                && !IsVisited(startX, startY - 1))
             {
-                if (mazeArray.GetLength(0) >= xPos + 1 &&
-                    mazeArray[xPos + 1, yPos] == 0)
-                {
-                    mazeArray[++xPos, yPos] = count++;
-                }
-                else if (xPos - 1 >= 0 &&
-                    mazeArray[xPos - 1, yPos] == 0)
-                {
-                    mazeArray[--xPos, yPos] = count++;
-                }
-                else if (mazeArray.GetLength(1) >= yPos + 1 &&
-                    mazeArray[xPos, yPos + 1] == 0)
-                {
-                    mazeArray[xPos, ++yPos] = count++;
-                }
-                else if (yPos - 1 >= 0 &&
-                    mazeArray[xPos, yPos - 1] == 0)
-                {
-                    mazeArray[xPos, --yPos] = count++;
-                }
+                PassMaze(startX, startY - 1);
 
-                if (mazeArray[xPos + 1, yPos] != 0
-                    && mazeArray[xPos - 1, yPos] != 0
-                    && mazeArray[xPos, yPos + 1] != 0
-                    && mazeArray[xPos, yPos - 1] != 0)
+                if (visited.Contains((startX, startY)))
                 {
-                    break;
+                    return;
                 }
+            }
+
+            if (CanGoRight(startX, startY)
+                && !IsVisited(startX, startY + 1))
+            {
+                PassMaze(startX, startY + 1);
+
+                if (visited.Contains((startX, startY)))
+                {
+                    return;
+                }
+            }
+
+            if (CanGoDown(startX, startY)
+                && !IsVisited(startX + 1, startY))
+            {
+                PassMaze(startX + 1, startY);
+
+                if (visited.Contains((startX, startY)))
+                {
+                    return;
+                }
+            }
+
+            if (CanGoUp(startX, startY)
+                && !IsVisited(startX - 1, startY))
+            {
+                PassMaze(startX - 1, startY);
+
+                if (visited.Contains((startX, startY)))
+                {
+                    return;
+                }
+            }
+
+            if (startX + 1 > mazeArray.GetLength(0) - 1
+                || startX - 1 < 0
+                || startY + 1 > mazeArray.GetLength(1) - 1
+                || startY - 1 < 0)
+            {
+                return;
             }
         }
 
-        #region Private Helper Methods
+        private bool CanGoDown(int startX, int startY)
+        {
+            if (mazeArray.GetLength(0) - 1 >= startX + 1
+                    && mazeArray[startX + 1, startY] == 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool CanGoUp(int startX, int startY)
+        {
+            if (startX - 1 >= 0
+                && mazeArray[startX - 1, startY] == 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool CanGoLeft(int startX, int startY)
+        {
+            if (startY - 1 >= 0
+                && mazeArray[startX, startY - 1] == 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool CanGoRight(int startX, int startY)
+        {
+            if (mazeArray.GetLength(1) - 1 >= startY + 1
+                    && mazeArray[startX, startY + 1] == 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool IsVisited(int startX, int startY)
+        {
+            (int x, int y) current = (startX, startY);
+
+            if (visited.Contains(current))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         private void ValidateArray(int[,] mazeModel)
         {
             if (mazeModel == null)
