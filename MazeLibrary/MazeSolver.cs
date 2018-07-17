@@ -3,14 +3,27 @@ using System.Collections.Generic;
 
 namespace MazeLibrary
 {
+    /// <summary>
+    /// Defines algorithm for finding exit from a maze
+    /// </summary>
     public class MazeSolver
     {
+        #region Fields
         private int[,] mazeArray;
         private int startX;
         private int startY;
         private int count = 1;
+        private bool end = false;
         private List<(int x, int y)> visited = new List<(int x, int y)>();
+        #endregion
 
+        #region Public API
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:MazeLibrary.MazeSolver" /> class
+        /// </summary>
+        /// <param name="mazeModel"> The two dimensional array which stores a maze </param>
+        /// <param name="startX"> Index of the start point from the first dimension of an array </param>
+        /// <param name="startY"> Index of the start point from the second dimension of an array </param>
         public MazeSolver(int[,] mazeModel, int startX, int startY)
         {
             ValidateArray(mazeModel);
@@ -21,12 +34,20 @@ namespace MazeLibrary
             this.startY = startY;
         }
 
+        /// <summary>
+        /// Returns the current state of the array
+        /// </summary>
+        /// <returns></returns>
         public int[,] MazeWithPass() => mazeArray;
 
+        /// <summary>
+        /// Performs finding of the exit from a maze
+        /// </summary>
         public void PassMaze()
         {
             PassMaze(startX, startY);
         }
+        #endregion
 
         #region Private Methods
         private void PassMaze(int startX, int startY)
@@ -35,47 +56,31 @@ namespace MazeLibrary
             visited.Add((startX, startY));
 
             if (CanGoLeft(startX, startY)
-                && !IsVisited(startX, startY - 1))
+                && !IsVisited(startX, startY - 1)
+                && !end)
             {
                 PassMaze(startX, startY - 1);
-
-                if (visited.Contains((startX, startY)))
-                {
-                    return;
-                }
             }
 
             if (CanGoRight(startX, startY)
-                && !IsVisited(startX, startY + 1))
+                && !IsVisited(startX, startY + 1)
+                && !end)
             {
                 PassMaze(startX, startY + 1);
-
-                if (visited.Contains((startX, startY)))
-                {
-                    return;
-                }
-            }
-
-            if (CanGoDown(startX, startY)
-                && !IsVisited(startX + 1, startY))
-            {
-                PassMaze(startX + 1, startY);
-
-                if (visited.Contains((startX, startY)))
-                {
-                    return;
-                }
             }
 
             if (CanGoUp(startX, startY)
-                && !IsVisited(startX - 1, startY))
+                && !IsVisited(startX - 1, startY)
+                && !end)
             {
                 PassMaze(startX - 1, startY);
+            }
 
-                if (visited.Contains((startX, startY)))
-                {
-                    return;
-                }
+            if (CanGoDown(startX, startY)
+                && !IsVisited(startX + 1, startY)
+                && !end)
+            {
+                PassMaze(startX + 1, startY);
             }
 
             if (startX + 1 > mazeArray.GetLength(0) - 1
@@ -83,7 +88,7 @@ namespace MazeLibrary
                 || startY + 1 > mazeArray.GetLength(1) - 1
                 || startY - 1 < 0)
             {
-                return;
+                end = true;
             }
         }
 
